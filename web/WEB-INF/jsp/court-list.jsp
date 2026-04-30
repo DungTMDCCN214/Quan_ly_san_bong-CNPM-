@@ -44,9 +44,14 @@
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3>🏟️ Quản lý sân</h3>
-            <a href="court?action=add" class="btn btn-success">
-                ➕ Thêm sân
-            </a>
+            <div class="d-flex gap-2">
+                <a href="customer" class="btn btn-outline-secondary">
+                    Quản lý khách hàng
+                </a>
+                <a href="court?action=add" class="btn btn-success">
+                    ➕ Thêm sân
+                </a>
+            </div>
         </div>
 
         <!-- Table -->
