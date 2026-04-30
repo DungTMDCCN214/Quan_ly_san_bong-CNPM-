@@ -25,6 +25,7 @@
 </head>
 
 <body>
+<jsp:include page="/WEB-INF/jsp/sidebar.jsp" />
 
 <div class="container mt-5">
 
