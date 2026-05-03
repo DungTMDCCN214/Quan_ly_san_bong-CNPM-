@@ -123,10 +123,13 @@
                     </div>
                     
                     <div class="col-md-2">
-                        <label class="form-label fw-bold"><i class="fas fa-chart-line"></i> Trạng thái</label>
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-chart-line"></i> Trạng thái
+                        </label>
                         <select id="statusFilter" class="form-select filter-input">
                             <option value="">Tất cả</option>
-                            <option value="AVAILABLE">✅ Hoạt động</option>
+                            <option value="AVAILABLE">🟢 Trống</option>
+                            <option value="IN_USE">🔴 Đang sử dụng</option>
                             <option value="MAINTENANCE">🔧 Bảo trì</option>
                         </select>
                     </div>
@@ -180,13 +183,21 @@
                             <td><%= String.format("%,.0f", c.getPrice_per_hour()) %> VNĐ</td>
                             <td>
                                 <% if ("AVAILABLE".equals(c.getStatus())) { %>
-                                    <span class="badge bg-success"><i class="fas fa-check-circle"></i> Hoạt động</span>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle"></i> Trống
+                                    </span>
+                                <% } else if ("IN_USE".equals(c.getStatus())) { %>
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-user"></i> Đang sử dụng
+                                    </span>
                                 <% } else if ("MAINTENANCE".equals(c.getStatus())) { %>
-                                    <span class="badge bg-warning text-dark"><i class="fas fa-tools"></i> Bảo trì</span>
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-tools"></i> Bảo trì
+                                    </span>
                                 <% } else { %>
                                     <span class="badge bg-secondary"><%= c.getStatus() %></span>
                                 <% } %>
-                             </td>
+                            </td>
                             <td>
                                 <a href="court?action=edit&id=<%= c.getCourt_id() %>" 
                                    class="btn btn-primary btn-sm">

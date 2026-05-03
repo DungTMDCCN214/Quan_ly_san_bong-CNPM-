@@ -66,21 +66,7 @@
                             <option value="Sân 7 người" <%= "Sân 7 người".equals(c.getType()) ? "selected" : "" %>>
                                 Sân 7 người
                             </option>
-                            <option value="Sân 11 người" <%= "Sân 11 người".equals(c.getType()) ? "selected" : "" %>>
-                                Sân 11 người
-                            </option>
-                            <option value="Sân tennis" <%= "Sân tennis".equals(c.getType()) ? "selected" : "" %>>
-                                Sân tennis
-                            </option>
-                            <option value="Sân cầu lông" <%= "Sân cầu lông".equals(c.getType()) ? "selected" : "" %>>
-                                Sân cầu lông
-                            </option>
-                            <option value="Sân bóng rổ" <%= "Sân bóng rổ".equals(c.getType()) ? "selected" : "" %>>
-                                Sân bóng rổ
-                            </option>
-                            <option value="Sân khác" <%= "Sân khác".equals(c.getType()) ? "selected" : "" %>>
-                                Sân khác
-                            </option>
+                            
                         </select>
                     </div>
 
@@ -96,14 +82,25 @@
                         <label class="form-label">Trạng thái</label>
                         <select name="status" class="form-select">
                             <option value="AVAILABLE" <%= "AVAILABLE".equals(c.getStatus()) ? "selected" : "" %>>
-                                ✅ Hoạt động
+                                🟢 Trống
+                            </option>
+                            <option value="IN_USE" <%= "IN_USE".equals(c.getStatus()) ? "selected" : "" %>>
+                                🔴 Đang sử dụng
                             </option>
                             <option value="MAINTENANCE" <%= "MAINTENANCE".equals(c.getStatus()) ? "selected" : "" %>>
                                 🔧 Bảo trì
                             </option>
                         </select>
-                        <div class="form-text">Trạng thái hiện tại: 
-                            <strong><%= "AVAILABLE".equals(c.getStatus()) ? "Hoạt động" : "Bảo trì" %></strong>
+
+                        <div class="form-text">
+                            Trạng thái hiện tại:
+                            <strong>
+                                <%= 
+                                    "AVAILABLE".equals(c.getStatus()) ? "Trống" :
+                                    "IN_USE".equals(c.getStatus()) ? "Đang sử dụng" :
+                                    "Bảo trì"
+                                %>
+                            </strong>
                         </div>
                     </div>
 
