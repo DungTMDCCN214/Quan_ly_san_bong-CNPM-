@@ -25,6 +25,7 @@
 </head>
 
 <body>
+<jsp:include page="/WEB-INF/jsp/sidebar.jsp" />
 
 <div class="container mt-5">
 
@@ -69,10 +70,11 @@
                     <div class="mb-3">
                         <label class="form-label">Trạng thái</label>
                         <select name="status" class="form-select">
-                            <option value="AVAILABLE">Hoạt động</option>
-                            <option value="MAINTENANCE">Bảo trì</option>
+                            <option value="AVAILABLE" selected>🟢 Trống</option>
+                            <option value="IN_USE">🔴 Đang sử dụng</option>
+                            <option value="MAINTENANCE">🔧 Bảo trì</option>
                         </select>
-                        <div class="form-text">Trạng thái mặc định: AVAILABLE</div>
+                        <div class="form-text">Trạng thái mặc định: Trống</div>
                     </div>
 
                     <!-- Description -->
