@@ -75,7 +75,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Dịa chỉ</label>
+                        <label class="form-label">Địa chỉ</label>
                         <textarea name="address" class="form-control" rows="3"><%= esc(customer.getAddress()) %></textarea>
                     </div>
 

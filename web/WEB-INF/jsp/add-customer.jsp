@@ -81,7 +81,7 @@
                     <div class="mb-3">
                         <label class="form-label">Loại khách </label>
                         <select name="customer_type" class="form-select">
-                            <option value="NORMAL" <%= selected(customer.getCustomer_type(), "NORMAL") %>>Thuong</option>
+                            <option value="NORMAL" <%= selected(customer.getCustomer_type(), "NORMAL") %>>Thường</option>
                             <option value="VIP" <%= selected(customer.getCustomer_type(), "VIP") %>>VIP</option>
                         </select>
                     </div>
