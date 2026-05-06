@@ -25,7 +25,7 @@
     String keyword = (String) request.getAttribute("keyword");
     String customer_type = (String) request.getAttribute("customer_type");
     String status = (String) request.getAttribute("status");
-    String message = (String) request.getAttribute("message");
+    String message = request.getParameter("message");
     String error = (String) request.getAttribute("error");
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 %>
@@ -55,15 +55,24 @@
 <div class="container mt-5">
     <div class="card shadow p-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3>Quan ly khach hang</h3>
+            <h3>Quản lý khách hàng</h3>
             <div class="d-flex gap-2">
                 <a href="court" class="btn btn-outline-secondary">Quản lý sân</a>
                 <a href="customer?action=add" class="btn btn-success">Thêm khách hàng</a>
             </div>
         </div>
 
-        <% if (message != null && !message.isEmpty()) { %>
-            <div class="alert alert-success"><%= esc(message) %></div>
+        <% if ("update_success".equals(message)) { %>
+            <div class="alert alert-success">Cập nhật khách hàng thành công!</div>
+
+        <% } else if ("add_success".equals(message)) { %>
+            <div class="alert alert-success">Thêm khách hàng thành công!</div>
+
+        <% } else if ("disable_success".equals(message)) { %>
+            <div class="alert alert-warning">Vô hiệu hóa khách hàng thành công!</div>
+
+        <% } else if ("restore_success".equals(message)) { %>
+            <div class="alert alert-success">Khôi phục khách hàng thành công!</div>
         <% } %>
 
         <% if (error != null && !error.isEmpty()) { %>
