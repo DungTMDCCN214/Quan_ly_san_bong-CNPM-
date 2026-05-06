@@ -101,7 +101,7 @@ public class CustomerServlet extends HttpServlet {
         }
 
         dao.insertCustomer(customer);
-        response.sendRedirect("customer");
+        response.sendRedirect("customer?message=add_success");
     }
 
     private void updateCustomer(HttpServletRequest request, HttpServletResponse response)
@@ -127,14 +127,18 @@ public class CustomerServlet extends HttpServlet {
         }
 
         dao.updateCustomer(customer);
-        response.sendRedirect("customer");
+        response.sendRedirect("customer?message=update_success");
     }
 
     private void changeCustomerStatus(HttpServletRequest request, HttpServletResponse response,
             String status) throws IOException {
         int id = parseId(request.getParameter("id"));
         dao.updateStatus(id, status);
-        response.sendRedirect("customer");
+        if ("INACTIVE".equals(status)) {
+            response.sendRedirect("customer?message=disable_success");
+        } else {
+            response.sendRedirect("customer?message=restore_success");
+        }
     }
 
     private Customer buildCustomerFromRequest(HttpServletRequest request, int id, String status) {
@@ -183,4 +187,3 @@ public class CustomerServlet extends HttpServlet {
         return trimmed.isEmpty() ? defaultValue : trimmed;
     }
 }
-
