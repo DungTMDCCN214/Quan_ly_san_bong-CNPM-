@@ -28,18 +28,18 @@ public class CustomerDAO {
 
     public List<Customer> searchCustomers(String keyword, String customer_type, String status) {
         List<Customer> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM customers WHERE 1 = 1");
+        StringBuilder sql = new StringBuilder("SELECT * FROM Customers WHERE 1 = 1");
         List<Object> params = new ArrayList<>();
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            sql.append(" AND (full_name LIKE ? OR phone LIKE ?)");
+            sql.append(" AND (fullName LIKE ? OR phone LIKE ?)");
             String likeKeyword = "%" + keyword.trim() + "%";
             params.add(likeKeyword);
             params.add(likeKeyword);
         }
 
         if (customer_type != null && !customer_type.trim().isEmpty() && !"ALL".equals(customer_type)) {
-            sql.append(" AND customer_type = ?");
+            sql.append(" AND customerType = ?");
             params.add(customer_type.trim());
         }
 
@@ -48,7 +48,7 @@ public class CustomerDAO {
             params.add(status.trim());
         }
 
-        sql.append(" ORDER BY created_at DESC, customer_id DESC");
+        sql.append(" ORDER BY createdAt DESC, customerId DESC");
 
         try (Connection connection = getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql.toString())) {
@@ -69,7 +69,7 @@ public class CustomerDAO {
     }
 
     public Customer getCustomerById(int id) {
-        String sql = "SELECT * FROM customers WHERE customer_id = ?";
+        String sql = "SELECT * FROM Customers WHERE customerId = ?";
 
         try (Connection connection = getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -92,7 +92,7 @@ public class CustomerDAO {
     }
 
     public boolean phoneExistsExceptId(String phone, int customer_id) {
-        String sql = "SELECT COUNT(*) FROM customers WHERE phone = ? AND customer_id <> ?";
+        String sql = "SELECT COUNT(*) FROM Customers WHERE phone = ? AND customerId <> ?";
 
         try (Connection connection = getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -112,7 +112,7 @@ public class CustomerDAO {
     }
 
     public void insertCustomer(Customer customer) {
-        String sql = "INSERT INTO customers(full_name, phone, address, customer_type, status, created_at) "
+        String sql = "INSERT INTO Customers(fullName, phone, address, customerType, status, createdAt) "
                 + "VALUES(?, ?, ?, ?, 'ACTIVE', GETDATE())";
 
         try (Connection connection = getConnection();
@@ -128,8 +128,8 @@ public class CustomerDAO {
     }
 
     public void updateCustomer(Customer customer) {
-        String sql = "UPDATE customers SET full_name = ?, phone = ?, address = ?, customer_type = ? "
-                + "WHERE customer_id = ?";
+        String sql = "UPDATE Customers SET fullName = ?, phone = ?, address = ?, customerType = ? "
+                + "WHERE customerId = ?";
 
         try (Connection connection = getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -145,7 +145,7 @@ public class CustomerDAO {
     }
 
     public void updateStatus(int customer_id, String status) {
-        String sql = "UPDATE customers SET status = ? WHERE customer_id = ?";
+        String sql = "UPDATE Customers SET status = ? WHERE customerId = ?";
 
         try (Connection connection = getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -159,13 +159,13 @@ public class CustomerDAO {
 
     private Customer mapCustomer(ResultSet rs) throws SQLException {
         return new Customer(
-                rs.getInt("customer_id"),
-                rs.getString("full_name"),
+                rs.getInt("customerId"),
+                rs.getString("fullName"),
                 rs.getString("phone"),
                 rs.getString("address"),
-                rs.getString("customer_type"),
+                rs.getString("customerType"),
                 rs.getString("status"),
-                rs.getTimestamp("created_at")
+                rs.getTimestamp("createdAt")
         );
     }
 }

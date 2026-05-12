@@ -10,7 +10,7 @@ public class DashboardDAO {
 
     public DashboardDAO() {
         try {
-            String url = "jdbc:sqlserver://localhost;databaseName=QLy_san_Pick;encrypt=true;trustServerCertificate=true";
+            String url = "jdbc:sqlserver://localhost;databaseName=QLy_san_bong;encrypt=true;trustServerCertificate=true";
             String user = "sa";
             String pass = "123456";
 
@@ -54,7 +54,7 @@ public class DashboardDAO {
         double serviceRevenue = 0;
 
         // Doanh thu từ sân (Invoices)
-        String sqlCourt = "SELECT ISNULL(SUM(total_amount), 0) FROM Invoices WHERE payment_status = 'paid'";
+        String sqlCourt = "SELECT ISNULL(SUM(netAmount), 0) FROM Invoices WHERE status = 'PAID'";
         try (PreparedStatement ps = connection.prepareStatement(sqlCourt); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 courtRevenue = rs.getDouble(1);
@@ -63,8 +63,8 @@ public class DashboardDAO {
             e.printStackTrace();
         }
 
-        // Doanh thu từ dịch vụ (Service_Usage)
-        String sqlService = "SELECT ISNULL(SUM(total_price), 0) FROM Service_Usage";
+        // Doanh thu từ dịch vụ (InvoiceDetails)
+        String sqlService = "SELECT ISNULL(SUM(quantity * unitPrice), 0) FROM InvoiceDetails id JOIN Invoices i ON id.invoiceId = i.invoiceId WHERE i.status = 'PAID'";
         try (PreparedStatement ps = connection.prepareStatement(sqlService); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 serviceRevenue = rs.getDouble(1);
@@ -78,7 +78,7 @@ public class DashboardDAO {
 
     // ========== DOANH THU DỊCH VỤ RIÊNG ==========
     public double getServiceRevenue() {
-        String sql = "SELECT ISNULL(SUM(total_price),0) FROM Service_Usage";
+        String sql = "SELECT ISNULL(SUM(id.quantity * id.unitPrice),0) FROM InvoiceDetails id JOIN Invoices i ON id.invoiceId = i.invoiceId WHERE i.status = 'PAID'";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getDouble(1);
@@ -91,7 +91,7 @@ public class DashboardDAO {
 
     // ========== DOANH THU SÂN RIÊNG ==========
     public double getCourtRevenue() {
-        String sql = "SELECT ISNULL(SUM(court_amount),0) FROM Invoices WHERE payment_status = 'paid'";
+        String sql = "SELECT ISNULL(SUM(netAmount),0) FROM Invoices WHERE status = 'PAID'";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getDouble(1);
@@ -104,7 +104,7 @@ public class DashboardDAO {
 
     // ========== TỔNG SỐ LƯỢNG DỊCH VỤ ĐÃ BÁN ==========
     public int getTotalServiceQuantity() {
-        String sql = "SELECT ISNULL(SUM(quantity),0) FROM Service_Usage";
+        String sql = "SELECT ISNULL(SUM(quantity),0) FROM InvoiceDetails";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
@@ -119,11 +119,11 @@ public class DashboardDAO {
     public Map<String, Double> getRevenueByDate() {
         Map<String, Double> revenueMap = new LinkedHashMap<>();
 
-        String sql = "SELECT TOP 7 CAST(created_at AS DATE) as RevenueDate, SUM(total_amount) as DailyRevenue "
+        String sql = "SELECT TOP 7 CAST(createdAt AS DATE) as RevenueDate, SUM(netAmount) as DailyRevenue "
                 + "FROM Invoices "
-                + "WHERE payment_status = 'paid' "
-                + "GROUP BY CAST(created_at AS DATE) "
-                + "ORDER BY CAST(created_at AS DATE) ASC";
+                + "WHERE status = 'PAID' "
+                + "GROUP BY CAST(createdAt AS DATE) "
+                + "ORDER BY CAST(createdAt AS DATE) ASC";
 
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -141,10 +141,11 @@ public class DashboardDAO {
     public Map<String, Double> getServiceRevenueByDate() {
         Map<String, Double> revenueMap = new LinkedHashMap<>();
 
-        String sql = "SELECT TOP 7 CAST(created_at AS DATE) as RevenueDate, SUM(total_price) as DailyRevenue "
-                + "FROM Service_Usage "
-                + "GROUP BY CAST(created_at AS DATE) "
-                + "ORDER BY CAST(created_at AS DATE) ASC";
+        String sql = "SELECT TOP 7 CAST(i.createdAt AS DATE) as RevenueDate, SUM(id.quantity * id.unitPrice) as DailyRevenue "
+                + "FROM InvoiceDetails id JOIN Invoices i ON id.invoiceId = i.invoiceId "
+                + "WHERE i.status = 'PAID' "
+                + "GROUP BY CAST(i.createdAt AS DATE) "
+                + "ORDER BY CAST(i.createdAt AS DATE) ASC";
 
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -162,15 +163,15 @@ public class DashboardDAO {
     public Map<String, Integer> getTopServices() {
         Map<String, Integer> topServices = new LinkedHashMap<>();
 
-        String sql = "SELECT TOP 5 s.service_name, SUM(su.quantity) as total_sold "
-                + "FROM Service_Usage su "
-                + "JOIN Services s ON su.service_id = s.service_id "
-                + "GROUP BY s.service_name "
+        String sql = "SELECT TOP 5 s.name, SUM(id.quantity) as total_sold "
+                + "FROM InvoiceDetails id "
+                + "JOIN Services s ON id.serviceId = s.serviceId "
+                + "GROUP BY s.name "
                 + "ORDER BY total_sold DESC";
 
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                String serviceName = rs.getString("service_name");
+                String serviceName = rs.getString("name");
                 int totalSold = rs.getInt("total_sold");
                 topServices.put(serviceName, totalSold);
             }

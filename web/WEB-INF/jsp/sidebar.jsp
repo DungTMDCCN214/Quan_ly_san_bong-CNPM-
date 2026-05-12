@@ -1,62 +1,103 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%
+    String currentPage = (String) request.getAttribute("currentPage");
+    if (currentPage == null) currentPage = "";
+%>
 <style>
     .sidebar {
-        width: 260px;
-        background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-        min-height: 100vh;
-        position: fixed;
-        top: 0;
-        left: 0;
-        padding-top: 20px;
-        color: white;
-        box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-        z-index: 1000;
+        width: 260px; min-height: 100vh;
+        background: linear-gradient(180deg, #1a2332 0%, #243447 100%);
+        display: flex; flex-direction: column;
+        position: fixed; left: 0; top: 0; z-index: 100;
+        box-shadow: 3px 0 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
     }
     .sidebar-logo {
-        text-align: center;
-        font-weight: 800;
-        font-size: 1.5rem;
-        margin-bottom: 30px;
-        color: #38ef7d;
-        letter-spacing: 1px;
+        padding: 22px 20px 18px; border-bottom: 1px solid rgba(255,255,255,0.08);
     }
-    .nav-link-custom {
-        color: rgba(255,255,255,0.8);
-        padding: 12px 20px;
-        margin: 5px 15px;
-        border-radius: 12px;
-        transition: all 0.3s ease;
-        font-weight: 500;
-        display: block;
-        text-decoration: none;
+    .sidebar-logo h2 { color: #4fc3f7; font-size: 1.1rem; font-weight: 700; margin: 0; }
+    .sidebar-logo span { color: rgba(255,255,255,0.4); font-size: 0.72rem; }
+
+    .sidebar-nav { padding: 14px 0; flex: 1; overflow-y: auto; }
+    .nav-section {
+        color: rgba(255,255,255,0.3); font-size: 0.68rem; font-weight: 700;
+        letter-spacing: 1.2px; text-transform: uppercase; padding: 12px 20px 4px;
     }
-    .nav-link-custom:hover, .nav-link-custom.active {
-        background: rgba(255,255,255,0.15);
-        color: white;
-        transform: translateX(5px);
+    .nav-item {
+        display: flex; align-items: center; gap: 11px;
+        padding: 11px 20px; color: rgba(255,255,255,0.65);
+        text-decoration: none; font-size: 0.9rem;
+        transition: all 0.3s ease; cursor: pointer;
+        border: none; background: none; width: 100%; text-align: left;
+        border-left: 3px solid transparent;
     }
-    .nav-link-custom i {
-        width: 25px;
+    .nav-item:hover { background: rgba(79,195,247,0.08); color: #81d4fa; }
+    .nav-item.active { background: rgba(79,195,247,0.14); color: #4fc3f7; border-left-color: #4fc3f7; }
+    .nav-item .ico { font-size: 1rem; width: 20px; text-align: center; }
+    .nav-item .arrow { margin-left: auto; font-size: 0.68rem; transition: transform 0.3s ease; }
+    .nav-item.open .arrow { transform: rotate(90deg); }
+
+    /* Submenu */
+    .submenu { overflow: hidden; max-height: 0; transition: max-height 0.35s ease; }
+    .submenu.open { max-height: 200px; }
+    .sub-item {
+        display: flex; align-items: center; gap: 8px;
+        padding: 9px 20px 9px 52px;
+        color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.85rem;
+        transition: all 0.3s ease; border-left: 3px solid transparent;
     }
+    .sub-item:hover { color: #81d4fa; background: rgba(255,255,255,0.04); }
+    .sub-item.active { color: #4fc3f7; font-weight: 600; border-left-color: #4fc3f7; }
+    .sub-item::before { content: '•'; font-size: 0.55rem; color: rgba(255,255,255,0.25); }
+    .sub-item.active::before { color: #4fc3f7; }
 </style>
 
 <div class="sidebar">
     <div class="sidebar-logo">
-        Quản lý sân bóng
+        <h2>⚽ Quản lý sân bóng đá</h2>
     </div>
-    
-    <a href="${pageContext.request.contextPath}/admin/dashboard" 
-       class="nav-link-custom ${active == 'dashboard' ? 'active' : ''}">
-         Tổng quan
-    </a>
-    
-    <a href="${pageContext.request.contextPath}/court" 
-       class="nav-link-custom ${active == 'court' ? 'active' : ''}">
-         Quản lý Sân
-    </a>
-    
-    <a href="${pageContext.request.contextPath}/customer" 
-       class="nav-link-custom ${active == 'customer' ? 'active' : ''}">
-         Quản lý khách hàng
-    </a>
+    <nav class="sidebar-nav">
+        
+
+        <div class="nav-section">Quản lý</div>
+        <a href="court" class="nav-item <%= "court".equals(currentPage) ? "active" : "" %>">
+            <span class="ico">🏟️</span> Quản lý sân
+        </a>
+        <a href="customer" class="nav-item <%= "customer".equals(currentPage) ? "active" : "" %>">
+            <span class="ico">👥</span> Khách hàng
+        </a>
+
+        <%-- Đặt sân (submenu) --%>
+        <% boolean isBooking = currentPage.startsWith("booking"); %>
+        <div class="nav-item <%= isBooking ? "active open" : "" %>"
+             onclick="toggleSub(this, 'sub-booking')">
+            <span class="ico">📅</span> Đặt sân
+            <span class="arrow">▶</span>
+        </div>
+        <div class="submenu <%= isBooking ? "open" : "" %>" id="sub-booking">
+            <a href="booking?action=start"
+               class="sub-item <%= "booking-new".equals(currentPage) ? "active" : "" %>">
+                Đặt sân mới
+            </a>
+            <a href="searchBooking?action=search"
+               class="sub-item <%= "booking-search".equals(currentPage) ? "active" : "" %>">
+                Tìm kiếm đơn đặt
+            </a>
+        </div>
+
+        <div class="nav-section">Tài chính</div>
+        <a href="invoice" class="nav-item <%= "invoice".equals(currentPage) ? "active" : "" %>">
+            <span class="ico">💰</span> Hóa đơn
+        </a>
+        <a href="revenue" class="nav-item <%= "revenue".equals(currentPage) ? "active" : "" %>">
+            <span class="ico">📈</span> Doanh thu
+        </a>
+    </nav>
 </div>
+
+<script>
+    function toggleSub(btn, id) {
+        btn.classList.toggle('open');
+        document.getElementById(id).classList.toggle('open');
+    }
+</script>

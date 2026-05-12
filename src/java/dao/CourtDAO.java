@@ -35,19 +35,19 @@ public class CourtDAO {
     // GET ALL
     public List<Court> getAllCourts() {
         List<Court> list = new ArrayList<>();
-        String sql = "SELECT * FROM courts";
+        String sql = "SELECT * FROM Courts";
 
         try (PreparedStatement ps = connection.prepareStatement(sql); 
                 ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Court c = new Court(
-                        rs.getInt("court_id"),
+                        rs.getInt("courtId"),
                         rs.getString("name"),
                         rs.getString("type"),           // Thêm type
-                        rs.getDouble("price_per_hour"),
+                        rs.getDouble("pricePerHour"),
                         rs.getString("status"),
                         rs.getString("description"),
-                        rs.getTimestamp("created_at")    // Thêm created_at
+                        rs.getTimestamp("createdAt")    // Thêm created_at
                 );
                 list.add(c);
             }
@@ -59,7 +59,7 @@ public class CourtDAO {
     
     // INSERT
     public void insertCourt(Court c){
-        String sql = "INSERT INTO courts(name, type, price_per_hour, status, description, created_at) VALUES(?, ?, ?, ?, ?, GETDATE())";
+        String sql = "INSERT INTO Courts(name, type, pricePerHour, status, description, createdAt) VALUES(?, ?, ?, ?, ?, GETDATE())";
 
         try(PreparedStatement ps = connection.prepareStatement(sql)){
             ps.setString(1, c.getName());
@@ -79,7 +79,7 @@ public class CourtDAO {
     
     // DELETE
     public void deleteCourt(int id){
-        String sql = "DELETE FROM courts WHERE court_id = ?";
+        String sql = "DELETE FROM Courts WHERE courtId = ?";
         
         try(PreparedStatement ps = connection.prepareStatement(sql)){
             ps.setInt(1, id);
@@ -91,20 +91,20 @@ public class CourtDAO {
     
     // GET BY ID
     public Court getCourtById(int id){
-        String sql = "SELECT * FROM courts WHERE court_id = ?";
+        String sql = "SELECT * FROM Courts WHERE courtId = ?";
         try(PreparedStatement ps = connection.prepareStatement(sql)){
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             
             if(rs.next()){
                 return new Court(
-                        rs.getInt("court_id"),
+                        rs.getInt("courtId"),
                         rs.getString("name"),
                         rs.getString("type"),           // Thêm type
-                        rs.getDouble("price_per_hour"),
+                        rs.getDouble("pricePerHour"),
                         rs.getString("status"),
                         rs.getString("description"),
-                        rs.getTimestamp("created_at")    // Thêm created_at
+                        rs.getTimestamp("createdAt")    // Thêm created_at
                 );
             }
         } catch(SQLException e){
@@ -115,7 +115,7 @@ public class CourtDAO {
     
     // UPDATE
     public void updateCourt(Court c){
-        String sql = "UPDATE courts SET name=?, type=?, price_per_hour=?, status=?, description=? WHERE court_id=?";
+        String sql = "UPDATE Courts SET name=?, type=?, pricePerHour=?, status=?, description=? WHERE courtId=?";
         
         try(PreparedStatement ps = connection.prepareStatement(sql)){
             ps.setString(1, c.getName());
