@@ -25,8 +25,10 @@
     String keyword = (String) request.getAttribute("keyword");
     String customer_type = (String) request.getAttribute("customer_type");
     String status = (String) request.getAttribute("status");
+
     String message = request.getParameter("message");
-    String error = (String) request.getAttribute("error");
+    String error = request.getParameter("error");
+
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 %>
 
@@ -98,19 +100,6 @@
             </div>
         </div>
 
-        <% if ("update_success".equals(message)) { %>
-            <div class="alert alert-success">Cập nhật khách hàng thành công!</div>
-
-        <% } else if ("add_success".equals(message)) { %>
-            <div class="alert alert-success">Thêm khách hàng thành công!</div>
-
-        <% } else if ("disable_success".equals(message)) { %>
-            <div class="alert alert-warning">Vô hiệu hóa khách hàng thành công!</div>
-
-        <% } else if ("restore_success".equals(message)) { %>
-            <div class="alert alert-success">Khôi phục khách hàng thành công!</div>
-        <% } %>
-
 <!-- Sidebar cố định bên trái -->
 <div class="sidebar">
     <jsp:include page="/WEB-INF/jsp/sidebar.jsp" />
@@ -133,17 +122,40 @@
                 </div>
             </div>
 
-            <% if (message != null && !message.isEmpty()) { %>
+            <% if ("add_success".equals(message)) { %>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle"></i> <%= esc(message) %>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <i class="fas fa-check-circle"></i>
+                    Thêm khách hàng thành công!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-            <% } %>
 
-            <% if (error != null && !error.isEmpty()) { %>
+            <% } else if ("update_success".equals(message)) { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle"></i>
+                    Cập nhật khách hàng thành công!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+            <% } else if ("disable_success".equals(message)) { %>
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="fas fa-ban"></i>
+                    Vô hiệu hóa khách hàng thành công!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+            <% } else if ("restore_success".equals(message)) { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-undo-alt"></i>
+                    Khôi phục khách hàng thành công!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+            <% } %>
+           <% if ("has_unpaid_invoice".equals(error)) { %>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-triangle"></i> <%= esc(error) %>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Không thể vô hiệu hóa khách hàng đang có hóa đơn chưa thanh toán.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <% } %>
 

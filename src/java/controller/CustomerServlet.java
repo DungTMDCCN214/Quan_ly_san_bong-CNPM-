@@ -133,7 +133,20 @@ public class CustomerServlet extends HttpServlet {
     private void changeCustomerStatus(HttpServletRequest request, HttpServletResponse response,
             String status) throws IOException {
         int id = parseId(request.getParameter("id"));
+
+        if ("INACTIVE".equals(status)) {
+
+            boolean hasUnpaid = dao.hasUnpaidInvoices(id);
+
+            if (hasUnpaid) {
+                response.sendRedirect(
+                        "customer?error=has_unpaid_invoice");
+                return;
+            }
+        }
+
         dao.updateStatus(id, status);
+
         if ("INACTIVE".equals(status)) {
             response.sendRedirect("customer?message=disable_success");
         } else {

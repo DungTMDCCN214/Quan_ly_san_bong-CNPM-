@@ -22,7 +22,8 @@ public class CustomerDAO {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             return DriverManager.getConnection(URL, USER, PASS);
         } catch (ClassNotFoundException e) {
-            throw new SQLException("Không tìm thấy SQL Server JDBC Driver. Hãy thêm mssql-jdbc.jar vao WEB-INF/lib.", e);
+            throw new SQLException("Không tìm thấy SQL Server JDBC Driver. Hãy thêm mssql-jdbc.jar vao WEB-INF/lib.",
+                    e);
         }
     }
 
@@ -144,6 +145,34 @@ public class CustomerDAO {
         }
     }
 
+    public boolean hasUnpaidInvoices(int customer_id) {
+        String sql = """
+                    SELECT COUNT(*)
+                    FROM invoices i
+                    JOIN booking_details bd ON i.booking_detail_id = bd.booking_detail_id
+                    JOIN bookings b ON bd.booking_id = b.booking_id
+                    WHERE b.customer_id = ?
+                    AND i.status = 'UNPAID'
+                """;
+
+        try (Connection connection = getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setInt(1, customer_id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     public void updateStatus(int customer_id, String status) {
         String sql = "UPDATE customers SET status = ? WHERE customer_id = ?";
 
@@ -165,8 +194,6 @@ public class CustomerDAO {
                 rs.getString("address"),
                 rs.getString("customer_type"),
                 rs.getString("status"),
-                rs.getTimestamp("created_at")
-        );
+                rs.getTimestamp("created_at"));
     }
 }
-
